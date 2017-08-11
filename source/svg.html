@@ -1,0 +1,133 @@
+layout: false
+---
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.6.3/svg.js"></script>
+<p>Press <kbd>&larr;</kbd> or <kbd>&rarr;</kbd> for left or right</p>
+<p>Press <kbd>A</kbd> to change shape selection </p>
+
+<div id="drawing"></div>
+<script>
+var draw = SVG('drawing').size(800, 600)
+
+var screen = draw.rect(800, 600).fill('#ccc')
+
+var text = draw.text("")
+
+var stage = []
+
+var body = {}
+	body.zero = 1
+	body.width = 200
+	body.y = 200
+	body.name = 'body'
+	body.items = []
+	body.items[0] = draw.circle(200).fill('#27ae60').move(-100, 200)
+	body.items[1] = draw.circle(200).fill('#8e44ad').move(300, 200)
+	body.items[2] = draw.circle(200).fill('#e74c3c').move(700, 200)
+	body.items[3] = draw.circle(200).fill('#038387').move(1100, 200)
+	body.items[4] = draw.circle(200).fill('#34495e').move(1500, 200)
+	body.items[5] = draw.circle(200).fill('#51595e').move(1900, 200)
+
+stage[0] = body
+
+var eyes = {}
+	eyes.zero = 1
+	eyes.width = 80
+	eyes.y = 240
+	eyes.name = 'eyes'
+	eyes.items = []
+	eyes.items[0] = draw.circle(80).fill('#D13438').move(0 - eyes.width / 2, eyes.y)
+	eyes.items[1] = draw.circle(80).fill('#881798').move(400 - eyes.width / 2, eyes.y)
+	eyes.items[2] = draw.circle(80).fill('#498205').move(800 - eyes.width / 2, eyes.y)
+	eyes.items[3] = draw.circle(80).fill('#f39c12').move(1200 - eyes.width / 2, eyes.y)
+	
+stage[1] = eyes
+
+var noses = {}
+	noses.zero = 1
+	noses.width = 40
+	noses.y = 300
+	noses.name = 'noses'
+	noses.items = []
+	noses.items[0] = draw.polyline('20,0 0,20 -20,0 0,-20 20,0').fill('#0063B1').move(0 - noses.width / 2, noses.y)
+	noses.items[1] = draw.polyline('20,0 0,20 -20,0 0,-20 20,0').fill('#7E735F').move(400 - noses.width / 2, noses.y)
+	noses.items[2] = draw.polyline('20,0 0,20 -20,0 0,-20 20,0').fill('#CA5010').move(800 - noses.width / 2, noses.y)
+	noses.items[3] = draw.polyline('20,0 0,20 -20,0 0,-20 20,0').fill('#FFB900').move(1200 - noses.width / 2, noses.y)
+
+stage[2] = noses
+
+select = function(element){	
+	text.text(element.name)
+}
+
+var i = 0;
+select(stage[i])
+
+document.body.onkeyup = function(e){
+	console.log(e.keyCode)
+    if(e.keyCode == 65){
+		i = i >= stage.length-1 ? 0 : i + 1 
+		select(stage[i])
+    }
+	
+	var layer = stage[i]
+
+	if(e.keyCode == 37){	
+		for(var k = 0; k < layer.items.length; k++) {
+			var item = layer.items[k],
+				x
+			
+			// push to the end
+			if(k == (layer.zero + 4) % layer.items.length)
+				x = (layer.items.length - 1) * 800/2 - layer.width / 2
+			else
+				x = item.x() + -1 * 400
+			item.move(x, item.y())
+		};
+		layer.zero = (layer.zero + +1) % layer.items.length
+	}
+
+	if(e.keyCode == 39){
+		for(var k = 0; k < layer.items.length; k++) {
+			var item = layer.items[k],
+				x
+			
+			// push to the beginning
+			if(k == (layer.zero + layer.items.length - 2) % layer.items.length)
+			 	x = 0 - layer.width / 2
+			else
+				x = item.x() + +1 * 400
+			item.move(x, item.y())	
+		};
+		layer.zero = (layer.zero + layer.items.length + -1) % layer.items.length
+	}	
+
+	text.text(layer.name + ': ' + layer.zero)
+}
+
+</script>
+<style>
+
+text {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+}
+
+kbd {
+    display: inline-block;
+    margin: 0 .1em;
+    padding: .1em .6em;
+    font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #242729;
+    text-shadow: 0 1px 0 #FFF;
+    background-color: #e1e3e5;
+    border: 1px solid #adb3b9;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(12,13,14,0.2), 0 0 0 2px #FFF inset;
+    white-space: nowrap;
+}
+
+</style>
